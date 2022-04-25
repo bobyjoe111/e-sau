@@ -1,0 +1,111 @@
+<html>
+	<head>
+		<title>E-Say</title>
+	</head>
+	<body>
+		<button id='back'>Back</button><br><br>
+		<input id='groupName'><br>
+		<input id='groupPassword'><br>
+		<button id='getGroup'>Visit Page</button><br><br></br>
+		<input id='data'><br>
+		<button id='submit'>Submit</button><br>
+		<div id='logs'></div>
+		<script>
+			function newP(text, div) {
+				var para = document.createElement("p");
+				var node = document.createTextNode(text);
+				para.appendChild(node);
+				document.getElementById(div).appendChild(para);	
+			}
+			function newH(text, div) {
+				var para = document.createElement("h3");
+				var node = document.createTextNode(text);
+				para.appendChild(node);
+				document.getElementById(div).appendChild(para);	
+			}
+
+			var past = document.getElementById('data');
+			var submit = document.getElementById('submit');
+			var back = document.getElementById('back');
+			var groupName = document.getElementById('groupName');
+			var groupPassword = document.getElementById('groupPassword');
+			var getGroup = document.getElementById('getGroup');
+			var go = false;
+			var q = window.location.search;
+			q = q.slice(q.indexOf('=')+1, q.length);
+			q = atob(q);
+			
+			back.addEventListener("click", function() {
+				window.location = 'index.html';
+			});
+
+			getGroup.addEventListener("click", function() {
+				getData(q);	
+				go = true;
+			});
+
+			submit.addEventListener('click', function() {
+				addData(past.value);
+			})
+
+			async function addData(data) {
+				var d = new Date();
+				var options = {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						id: q,
+						log: data,
+						author: q,
+						name: groupName.value,
+						password: groupPassword.value,
+						date: d.getMonth()+1 + '/' + d.getDate() + '/' + d.getFullYear()
+					})
+				};
+				var response = await fetch('/addGroupData', options);
+				var data = await response.json();
+				if (data.success === false) {
+					alert(data.reason);
+					return;
+				}
+				getData(q);
+			}
+			async function getData(id, human) {
+				var options = {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						name: groupName.value,
+						password: groupPassword.value
+					})
+				};
+				var response = await fetch('/getGroupData', options);
+				var data = await response.json();
+				if (data.success === false) {
+					if (human === false) {
+						console.log(data.reason);
+					} else {
+						alert(data.reason);
+					}
+					return;
+				}
+				document.getElementById('logs').innerHTML = '';
+				for (var i = data.logs.length - 1; i > -1; i--) {	
+					newH("At " + data.logs[i].date + " " + data.logs[i].author + " posted: ", 'logs');
+					newP(data.logs[i].log, 'logs');
+				}
+			}
+
+			window.setInterval(function() {
+				if (go === true) {
+					getData(q, false);
+				}
+			}, 500);
+			
+		</script>
+	</body>
+</html>

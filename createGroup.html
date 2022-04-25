@@ -1,0 +1,47 @@
+<html>
+	<head>
+		<title>Create an E-Say Page</title>
+	</head>
+	<body>
+		<button id='back'>Back</button><br><br>
+		<input id='groupName'><br>
+		<input id='groupPassword'><br>
+		<button id='makeGroup'>Make your Group</button><br><br></br>
+		<script>
+			var groupName = document.getElementById('groupName');
+			var groupPassword = document.getElementById('groupPassword');
+			var makeGroup = document.getElementById('makeGroup');
+			var back = document.getElementById('back');
+			
+			back.addEventListener("click", function() {
+				window.location = 'index.html';
+			});
+			
+			makeGroup.addEventListener("click", function() {
+				createGroup(groupName.value, groupPassword.value);	
+			});
+
+			
+			
+			async function createGroup(name, password) {
+				var options = {
+					method: 'POST',
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						name: name,
+						password: password
+					})
+				};
+				var response = await fetch('/createGroup', options);
+				var data = await response.json();
+				if (data.success === false) {
+					alert(data.reason);
+					return;
+				}
+			}
+			
+		</script>
+	</body>
+</html>
