@@ -20,54 +20,115 @@ function User(name, password) {
 }
 
 const express = require('express');
-const Datastore = require('nedb');
+const fetch =  require('node-fetch');
 var accounts = [];
 const app = express();
-var database = new Datastore('database.db');
-database.loadDatabase();
-var addToDb = function(d) {
+var addlogsToDb = async function(u, d) {
+	await accToDb();
+	accounts[u].logs.push(d);
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-accounts",
+								info: {accounts: accounts}
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
+	console.log(await response.json());	
+}
+var addToDb = async function(d) {
 	var timestamp = Date.now();
 	d.timestamp = timestamp;
-	database.insert(d);
+	await accToDb();
+	if (d) {accounts.push(d);}
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-accounts",
+								info: {accounts: accounts}
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
+	console.log(await response.json());
+	//await accToDb();
+	
 }
 
 var carson = new Group('Carson\'s group', "dogs");
 carson.logs.push(new Log("3/07/2022", "Hello World", "Carson"));
 
-function accToDb() {
-	database.find({}, (err, data) => {
-		if (err) {response.send(); return;}
-		accounts = data;
-	});
+async function accToDb() {
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-accounts"
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/read', options);
+	var data = await response.json();
+	accounts = await data.accounts;
+	
 }
 
-var dataGroups = new Datastore('dataGroups.db');
-dataGroups.loadDatabase();
 var groups = [carson];
 
-function upDateLogs(user, newUser) {
-	database.update(user, newUser, {}, function (err, numReplaced) {});
-	console.log(user);
-	console.log(newUser);
+async function groToDg() {
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-groups"
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/read', options);
+	var data = await response.json();
+	groups = await data.groups;
 }
-
-function upDateGroup(user, newUser) {
-	dataGroups.update(user, newUser, {}, function (err, numReplaced) {});
-	console.log(user);
-	console.log(newUser);
-}
-
-function groToDg() {
-	dataGroups.find({}, (err, data) => {
-		if (err) {response.send(); return;}
-		groups = data;
-	});
-}
-var addToDg = function(d) {
+var addToDg = async function(d) {
 	var timestamp = Date.now();
 	d.timestamp = timestamp;
-	dataGroups.insert(d);
-	console.log(d);
+	groToDg();
+	groups.push(d);
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-groups",
+								info: {groups: groups}
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
+	console.log(await response.json());
+}
+
+var addLogToGroup = async function(u, d) {
+	await groToDg();
+	groups[u].logs.push(d);
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-groups",
+								info: {groups: groups}
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
+	console.log(await response.json());
 }
 
 app.listen(process.env.PORT || 3000, () => console.log('listening at 3000'));
@@ -75,8 +136,8 @@ app.use( express.static( __dirname) );
 app.use(express.json());
 
 
-app.post('/login', (request, response) => {
-	accToDb();
+app.post('/login', async (request, response) => {
+	await accToDb();
 	var data = request.body;
 	console.log(accounts);
 	var f = true;
@@ -93,8 +154,8 @@ app.post('/login', (request, response) => {
 		response.send({success: false, reason: "Username or password is incorrect!"});
 	}
 });
-app.post('/getData', (request, response) => {
-	accToDb();
+app.post('/getData', async (request, response) => {
+	await accToDb();
 	var data = request.body;
 	for (var u in accounts) {
 		if (data.id === accounts[u].id) {
@@ -105,24 +166,24 @@ app.post('/getData', (request, response) => {
 	}
 	response.send({success: false, reason: "Please login!"});
 });
-app.post('/addData', (request, response) => {
-	accToDb();
+app.post('/addData', async (request, response) => {
+	await accToDb();
 	var data = request.body;
 	for (var u in accounts) {
 		if (data.id === accounts[u].id) {
 			var old = JSON.parse(JSON.stringify(accounts[u]));
-			accounts[u].logs.push(new Log(data.date, data.log));
-			upDateLogs(old, accounts[u]);
-			console.log("User: " + accounts[u].id + ' added data to their account.');
+			addlogsToDb(new Log(data.date, data.log));
+			await addToDb();
 			response.send({success: true});
 			return;
 		}
 	}
+	await accToDb();
 	response.send({success: false, reason: "Please login!"});
 	
 });
-app.post('/newUser', (request, response) => {
-	accToDb();
+app.post('/newUser', async (request, response) => {
+	await accToDb();
 	var data = request.body;
 	for (var i in accounts) {
 		if (accounts[i].name === data.username) {
@@ -131,18 +192,17 @@ app.post('/newUser', (request, response) => {
 			return;
 		}
 	}
-	addToDb(new User(data.username, data.password));
-	accToDb();
-	console.log(accounts);
+	await addToDb(new User(data.username, data.password));
+	await accToDb();
 	console.log("New user account.");
 	var i = accounts.length - 1;
-	console.log('{\n id: ' + accounts[i].id + '\n name: ' + accounts[i].name + "\n password: " + accounts[i].password + '\n}')
+	//console.log('{\n id: ' + accounts[i].id + '\n name: ' + accounts[i].name + "\n password: " + accounts[i].password + '\n}')
 	response.send({success: true});
 });
 
-app.post('/createGroup', (request, response) => {
-	accToDb();
-	groToDg();
+app.post('/createGroup', async (request, response) => {
+	await accToDb();
+	await groToDg();
 	var data = request.body;
 	for (var u in groups) {
 		if (data.name === groups[u].name) {
@@ -150,16 +210,16 @@ app.post('/createGroup', (request, response) => {
 			return;
 		}
 	}
-	addToDg(new Group(data.name, data.password));
+	await addToDg(new Group(data.name, data.password));
 	//groups.push(new Group(data.name, data.password));
 	console.log(data.name + ' ' + data.password)
 	response.send({success: true});
 	
 });
 
-app.post('/getGroupData', (request, response) => {
-	accToDb();
-	groToDg();
+app.post('/getGroupData', async (request, response) => {
+	await accToDb();
+	await groToDg();
 	var data = request.body;
 	console.log(groups);
 	for (var u in groups) {
@@ -172,15 +232,15 @@ app.post('/getGroupData', (request, response) => {
 	response.send({success: false, reason: "Group does not exist!"});
 });
 
-app.post('/addGroupData', (request, response) => {
-	accToDb();
-	groToDg();
+app.post('/addGroupData', async (request, response) => {
+	await accToDb();
+	await groToDg();
 	var data = request.body;
 	for (var u in groups) {
 		if (data.name === groups[u].name && data.password === groups[u].password) {
 			var old = JSON.parse(JSON.stringify(groups[u]));
 			groups[u].logs.push(new Log(data.date, data.log, data.author));
-			upDateGroup(old, groups[u]);
+			await addLogToGroup(u, new Log(data.date, data.log, data.author));
 			console.log("User: " + data.id + ' added data to their group');
 			response.send({success: true});
 			return;
