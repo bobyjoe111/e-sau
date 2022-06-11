@@ -48,7 +48,7 @@
 				addData(past.value);
 			})
 
-			async function addData(data) {
+			async function addData(datameow) {
 				var d = new Date();
 				var options = {
 					method: 'POST',
@@ -57,7 +57,7 @@
 					},
 					body: JSON.stringify({
 						id: q,
-						log: data,
+						log: datameow,
 						author: q,
 						name: groupName.value,
 						password: groupPassword.value,

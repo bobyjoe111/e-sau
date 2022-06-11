@@ -116,7 +116,7 @@ var addToDg = async function(d) {
 
 var addLogToGroup = async function(u, d) {
 	await groToDg();
-	groups[u].logs.push(d);
+	groups[u].logs.push(d)
 	var options = {
 							method: 'POST',
 							headers: {
@@ -221,7 +221,7 @@ app.post('/getGroupData', async (request, response) => {
 	await accToDb();
 	await groToDg();
 	var data = request.body;
-	console.log(groups);
+	//console.log(groups);
 	for (var u in groups) {
 		if (data.name === groups[u].name) {
 			response.send({success: true, logs: groups[u].logs});
@@ -236,9 +236,11 @@ app.post('/addGroupData', async (request, response) => {
 	await accToDb();
 	await groToDg();
 	var data = request.body;
+	for (var i in data) {
+		console.log(data[i] + '    ' + i)
+	}
 	for (var u in groups) {
 		if (data.name === groups[u].name && data.password === groups[u].password) {
-			var old = JSON.parse(JSON.stringify(groups[u]));
 			groups[u].logs.push(new Log(data.date, data.log, data.author));
 			await addLogToGroup(u, new Log(data.date, data.log, data.author));
 			console.log("User: " + data.id + ' added data to their group');
