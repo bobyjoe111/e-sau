@@ -1,6 +1,15 @@
 <html>
 	<head>
 		<title>Create an E-Say Page</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+		<style>
+			* {
+				font-family: "Comfortaa", cursive;
+			}
+		</style>
 	</head>
 	<body>
 		<button id='back'>Back</button><br><br>
@@ -39,6 +48,8 @@
 				if (data.success === false) {
 					alert(data.reason);
 					return;
+				} else {
+					window.location = 'index.html';
 				}
 			}
 			

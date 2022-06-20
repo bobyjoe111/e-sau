@@ -1,27 +1,88 @@
 <html>
 	<head>
 		<title>E-Say</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&display=swap" rel="stylesheet">
+		<style>
+			* {
+				font-family: "Comfortaa", cursive; 	
+			}
+
+			body {
+				background-color: skyblue;
+			}
+			
+			.block {
+				min-width: 10%;
+  			max-width: 40%;
+				padding: 10px;
+				background-color: blue;
+				border-radius: 25px;
+			}
+
+			input, button {
+				text-align: right;
+				margin-top: 2px;
+			}
+			
+			input {
+				width: 98%;
+				border-radius: 10px;
+				padding: 5px;
+			}
+
+			#bottom {
+				text-align: center;
+				width: 100%;
+				position: fixed;
+				bottom: 0.5px;
+				left: 0px;
+				background-color: green;
+			}
+			
+		</style>
 	</head>
 	<body>
-		<button id='back'>Back</button><br><br>
-		<input id='groupName' placeholder='group username'><br>
-		<input id='groupPassword' placeholder='group password'><br>
-		<button id='getGroup'>Visit Page</button><br><br></br>
-		<input id='dataMessage' placeholder="message"><br>
-		<button id='submit'>Submit</button><br>
 		<div id='logs'></div>
+		<br><br><br><br><br><br><br><br><br><br><br>
+		<div id='bottom'>
+			<br>
+			<button id='back'>Back</button><br>
+			<input id='groupName' placeholder='group username'><br>
+			<input id='groupPassword' placeholder='group password'><br>
+			<button id='getGroup'>Visit Page</button><br>
+			<input id='dataMessage' placeholder="message"><br>
+			<button id='submit'>Submit</button><br><br>
+		</div>
+		
 		<script>
-			function newP(text, div) {
-				var para = document.createElement("p");
-				var node = document.createTextNode(text);
-				para.appendChild(node);
-				document.getElementById(div).appendChild(para);	
-			}
-			function newH(text, div) {
+
+			function newH(text, text1, div, left) {
+				const newDiv = document.createElement("div");
+				newDiv.className = 'block';
 				var para = document.createElement("h3");
 				var node = document.createTextNode(text);
 				para.appendChild(node);
-				document.getElementById(div).appendChild(para);	
+				newDiv.appendChild(para);
+
+				var p = document.createElement("p");
+				var n = document.createTextNode(text1);
+				p.appendChild(n);	
+				newDiv.appendChild(p);
+				
+				document.getElementById(div).appendChild(newDiv);
+				if (left) {
+					newDiv.style.float = "left";
+					p.style.textAlign = "left";
+					para.style.textAlign = "left";
+				} else {
+					newDiv.style.float = "right";
+					p.style.textAlign = "right";
+					para.style.textAlign = "right";
+				}
+				
 			}
 
 			var past = document.getElementById('dataMessage');
@@ -94,9 +155,16 @@
 					return;
 				}
 				document.getElementById('logs').innerHTML = '';
-				for (var i = data.logs.length - 1; i > -1; i--) {	
-					newH("At " + data.logs[i].date + " " + data.logs[i].author + " posted: ", 'logs');
-					newP(data.logs[i].log, 'logs');
+				for (var i = 0; i < data.logs.length; i++) {	
+					document.getElementById('logs').innerHTML += '<div id="thick">';
+					newH("At " + data.logs[i].date + " " + data.logs[i].author + " posted: ", data.logs[i].log, 'logs', !(data.logs[i].author === q));
+					
+				document.getElementById('logs').innerHTML += '<br><br><br><br><br><br><br>';	
+				}
+				if (human === false) {
+					
+				} else {
+					window.scrollTo(0,document.body.scrollHeight);
 				}
 			}
 
