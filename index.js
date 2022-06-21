@@ -1,5 +1,5 @@
 var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-
+console.log(btoa('Jungkook'));
 function Group(name, password) {
 	this.name = name;
 	this.password = password;

@@ -21,6 +21,7 @@
 				background-color: blue;
 				border-radius: 25px;
 				overflow-x: hidden;
+				display: inline-block;
 			}
 
 			input, button {
@@ -59,12 +60,14 @@
 		</div>
 		
 		<script>
-
 			function newH(text, text1, div, left) {
+				const container = document.createElement("div");
+				
 				const newDiv = document.createElement("div");
 				newDiv.className = 'block';
 				var para = document.createElement("h3");
 				var node = document.createTextNode(text);
+				para.innerHTML += '';
 				para.appendChild(node);
 				newDiv.appendChild(para);
 
@@ -72,16 +75,24 @@
 				var n = document.createTextNode(text1);
 				p.appendChild(n);	
 				newDiv.appendChild(p);
-				
-				document.getElementById(div).appendChild(newDiv);
+
+				container.appendChild(newDiv);
+				document.getElementById(div).appendChild(container);
+				container.style.marginBottom = '2px';
+				container.width = "100%";
 				if (left) {
-					newDiv.style.float = "left";
+					container.style.textAlign = 'left';
 					p.style.textAlign = "left";
 					para.style.textAlign = "left";
+					newDiv.style.marginLeft = '0px' ;
+					newDiv.style.marginRight = 'auto';
+					newDiv.style.backgroundColor = 'gray';
 				} else {
-					newDiv.style.float = "right";
+					container.style.textAlign = 'right';
 					p.style.textAlign = "right";
 					para.style.textAlign = "right";
+					newDiv.style.marginLeft = 'auto' ;
+					newDiv.style.marginRight = '0px';
 				}
 				
 			}
@@ -159,8 +170,7 @@
 				for (var i = 0; i < data.logs.length; i++) {	
 					document.getElementById('logs').innerHTML += '<div id="thick">';
 					newH("At " + data.logs[i].date + " " + data.logs[i].author + " posted: ", data.logs[i].log, 'logs', !(data.logs[i].author === q));
-					
-				document.getElementById('logs').innerHTML += '<br><br><br><br><br><br><br>';	
+
 				}
 				if (human === false) {
 					
