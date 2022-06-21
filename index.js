@@ -197,7 +197,7 @@ app.post('/newUser', async (request, response) => {
 	console.log("New user account.");
 	var i = accounts.length - 1;
 	//console.log('{\n id: ' + accounts[i].id + '\n name: ' + accounts[i].name + "\n password: " + accounts[i].password + '\n}')
-	response.send({success: true});
+	response.send({success: true, name: data.username});
 });
 
 app.post('/createGroup', async (request, response) => {
