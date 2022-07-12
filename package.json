@@ -1,13 +1,17 @@
 {
   "name": "e-say",
   "version": "1.0.0",
-  "description": "Social Media App",
+  "description": "E-Say is an easy to use chat app, with easy accessibility and pleasing features. Start chatting now with an easy sign up.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
   "keywords": [
+		"chat", 
+		"communication", 
+		"social", 
+		"texting",
     "social",
     "media"
   ],
