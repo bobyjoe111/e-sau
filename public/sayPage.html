@@ -110,9 +110,14 @@
 			var groupPassword = document.getElementById('groupPassword');
 			var getGroup = document.getElementById('getGroup');
 			var go = false;
-			var q = window.location.search;
-			q = q.slice(q.indexOf('=')+1, q.length);
-			q = atob(q);
+			var q = sessionStorage.getItem('q');
+			var qe = sessionStorage.getItem('qe');
+
+			if (q === undefined || qe === undefined) {
+				window.location = 'index.html';
+			}
+			
+			console.log(q + '  ' + qe)
 			
 			back.addEventListener("click", function() {
 				window.location = 'index.html';
@@ -138,6 +143,7 @@
 						id: q,
 						log: datameow,
 						author: q,
+						email: qe,
 						name: groupName.value,
 						password: groupPassword.value,
 						date: d.getMonth()+1 + '/' + d.getDate() + '/' + d.getFullYear()

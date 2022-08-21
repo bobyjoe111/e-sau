@@ -1,8 +1,8 @@
 var alphabet = 'abcdefghijklmnopqrstuvwxyz';
-console.log(btoa('Jungkook'));
 function Group(name, password) {
 	this.name = name;
 	this.password = password;
+	this.emails = [];
 	this.id = alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)];
 	this.logs = [];
 }
@@ -12,15 +12,43 @@ function Log(date, log, author) {
 	this.log = log;
 	this.author = author;
 }
-function User(name, password) {
+function User(name, password, email) {
 	this.id = alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)] + alphabet[Math.floor(Math.random()*26)];
 	this.name = name;
 	this.password = password;
 	this.logs = [];
+	this.email = email;
 }
 
 const express = require('express');
 const fetch =  require('node-fetch');
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'the.real.e.say@gmail.com',
+    pass: 'lxlhjclaoqbnmfoj'
+  }
+});
+
+function sendEmail(e, t) {
+	var mailOptions = {
+  	from: 'the.real.e.say@gmail.com',
+  	to: e,
+  	subject: 'E-Say Notification',
+  	text: t
+	};
+
+	transporter.sendMail(mailOptions, function(error, info){
+	  if (error) {
+	    console.log(error);
+	  } else {
+	    console.log('Email sent: ' + info.response);
+	  }
+	});	
+}
+
 var accounts = [];
 const app = express();
 var addlogsToDb = async function(u, d) {
@@ -132,7 +160,7 @@ var addLogToGroup = async function(u, d) {
 }
 
 app.listen(process.env.PORT || 3000, () => console.log('listening at 3000'));
-app.use( express.static( __dirname) );
+app.use( express.static('public') );
 app.use(express.json());
 
 
@@ -143,7 +171,7 @@ app.post('/login', async (request, response) => {
 	var f = true;
 	for (var u in accounts) {
 		if (data.username === accounts[u].name && data.password === accounts[u].password) {
-			response.send({success: true, name: accounts[u].name});
+			response.send({success: true, name: accounts[u].name, email: accounts[u].email});
 			console.log("User: " + accounts[u].id + ' logged in.');
 			f = false;
 			return;
@@ -192,7 +220,7 @@ app.post('/newUser', async (request, response) => {
 			return;
 		}
 	}
-	await addToDb(new User(data.username, data.password));
+	await addToDb(new User(data.username, data.password, data.email));
 	await accToDb();
 	console.log("New user account.");
 	var i = accounts.length - 1;
@@ -241,6 +269,17 @@ app.post('/addGroupData', async (request, response) => {
 	}
 	for (var u in groups) {
 		if (data.name === groups[u].name && data.password === groups[u].password) {
+			
+			if (!(groups[u].emails.includes(data.email))) {
+				groups[u].emails.push(data.email);
+			}
+
+			for (var email of groups[u].emails) {
+				if (email !== data.email) {
+					sendEmail(email, "See what " + data.author + " said on E-Say at esay.herokuapp.com.")
+				}
+			}
+			
 			groups[u].logs.push(new Log(data.date, data.log, data.author));
 			await addLogToGroup(u, new Log(data.date, data.log, data.author));
 			console.log("User: " + data.id + ' added data to their group');

@@ -26,6 +26,7 @@
 		<button id='go'>Login</button>
 		<br><br>
 		<h1>Sign Up</h1>
+		<input id='signemail' placeholder='email'><br>
 		<input id='signname' placeholder='username'><br>
 		<input id='signpass' placeholder='password'><br>
 		<button id='signgo'>Sign Up</button>
@@ -44,6 +45,7 @@
 		<script>
 			var username = document.getElementById('username');
 			var password = document.getElementById('password');
+			var email = document.getElementById('signemail');
 			var go = document.getElementById('go');
 			var signname = document.getElementById('signname');
 			var signpass = document.getElementById('signpass');
@@ -55,11 +57,11 @@
 			});
 			
 			go.addEventListener('click', function() {
-				login(username.value, password.value)
+				login(username.value, password.value);
 			});
 
 			signgo.addEventListener('click', function() {
-				signUp(signname.value, signpass.value)
+				signUp(signname.value, signpass.value, email.value);
 			});
 			
 			async function login(u, p) {
@@ -80,11 +82,13 @@
 					return;
 				}
 				if (data.success === true) {
-					window.location = 'sayPage.html?timeStamp=' + btoa(data.name);
+					sessionStorage.setItem('q', data.name);
+					sessionStorage.setItem('qe', data.email);
+					window.location = 'sayPage.html';
 				}
 			}
 
-			async function signUp(u, p) {
+			async function signUp(u, p, e) {
 				var options = {
 					method: 'POST',
 					headers: {
@@ -92,7 +96,8 @@
 					},
 					body: JSON.stringify({
 						username: u,
-						password: p
+						password: p,
+						email: e
 					})
 				};
 				var response = await fetch('/newUser', options);
@@ -101,7 +106,9 @@
 					alert(data.reason);
 					return;
 				} else {
-					window.location = 'sayPage.html?timeStamp=' + btoa(data.name);
+					sessionStorage.setItem('q', u);
+				  sessionStorage.setItem('qe', e);
+					window.location = 'sayPage.html';
 				}
 			}
 			
