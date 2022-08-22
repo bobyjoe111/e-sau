@@ -113,7 +113,7 @@
 			var q = sessionStorage.getItem('q');
 			var qe = sessionStorage.getItem('qe');
 
-			if (q === undefined || qe === undefined) {
+			if (q === null || qe === null) {
 				window.location = 'index.html';
 			}
 			
