@@ -273,16 +273,15 @@ app.post('/addGroupData', async (request, response) => {
 			if (!(groups[u].emails.includes(data.email))) {
 				groups[u].emails.push(data.email);
 			}
-
+			
+			groups[u].logs.push(new Log(data.date, data.log, data.author));
+			await addLogToGroup(u, new Log(data.date, data.log, data.author));
+			console.log("User: " + data.id + ' added data to their group');
 			for (var email of groups[u].emails) {
 				if (email !== data.email) {
 					sendEmail(email, "See what " + data.author + " said on E-Say at esay.herokuapp.com.")
 				}
 			}
-			
-			groups[u].logs.push(new Log(data.date, data.log, data.author));
-			await addLogToGroup(u, new Log(data.date, data.log, data.author));
-			console.log("User: " + data.id + ' added data to their group');
 			response.send({success: true});
 			return;
 		}
