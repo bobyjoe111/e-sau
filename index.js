@@ -159,6 +159,22 @@ var addLogToGroup = async function(u, d) {
 	console.log(await response.json());
 }
 
+var addEmailToGroup = async function(u, d) {
+	await groToDg();
+	groups[u].emails.push(d);
+	var options = {
+							method: 'POST',
+							headers: {
+								"Content-Type": "application/json"
+							},
+							body: JSON.stringify({
+								name: "e-say-groups",
+								info: {groups: groups}
+							})
+						};
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
+}
+
 app.listen(process.env.PORT || 3000, () => console.log('listening at 3000'));
 app.use( express.static('public') );
 app.use(express.json());
@@ -270,8 +286,9 @@ app.post('/addGroupData', async (request, response) => {
 	for (var u in groups) {
 		if (data.name === groups[u].name && data.password === groups[u].password) {
 			
-			if (!(groups[u].emails.includes(data.email))) {
+			if (groups[u].emails.includes(data.email) === false) {
 				groups[u].emails.push(data.email);
+				await addEmailToGroup(u, data.email);
 			}
 			
 			groups[u].logs.push(new Log(data.date, data.log, data.author));
@@ -279,7 +296,7 @@ app.post('/addGroupData', async (request, response) => {
 			console.log("User: " + data.id + ' added data to their group');
 			for (var email of groups[u].emails) {
 				if (email !== data.email) {
-					sendEmail(email, "See what " + data.author + " said on E-Say at esay.herokuapp.com.")
+					sendEmail(email, "See what " + data.author + " said on E-Say at e-say.herokuapp.com.")
 				}
 			}
 			response.send({success: true});
