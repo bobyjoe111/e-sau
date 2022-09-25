@@ -19,6 +19,11 @@
 			body {
 				background-color: skyblue;
 			}
+
+			video {
+				position: absolute;
+				left: -200%;
+			}
 			
 			.block {
 				min-width: 10%;
@@ -62,10 +67,20 @@
 			<input id='groupPassword' placeholder='group password'><br>
 			<button id='getGroup'>Visit Page</button><br>
 			<input id='dataMessage' placeholder="message"><br>
+			<button id='image'>Choose Image</button>
 			<button id='submit'>Submit</button><br><br>
 		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js" integrity="sha512-P/Je1zlTfRugG4aRZRx9hYRVph2CkbpchkgP6ub1gNF/VNHDUNq0/WOY0CSLMmwEXxrQ7HohFmMenWGpx8ZzvQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js" integrity="sha512-hAm8hj9/2EIonvS+sf0G3anaY8zYHv6q7ktNlLTg8wLwFvhUavnDdH0gif8SA3U1kN0lyKBWbf1wD4+5BfaMMA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 		
 		<script>
+			var video;
+			function setup() {
+				noCanvas();
+				video = createCapture(VIDEO);
+				video.size(320/2.5, 240/2.5);
+			}
 			function newH(text, text1, div, left) {
 				const container = document.createElement("div");
 				
@@ -77,10 +92,18 @@
 				para.appendChild(node);
 				newDiv.appendChild(para);
 
+				
 				var p = document.createElement("p");
 				var n = document.createTextNode(text1);
-				p.appendChild(n);	
-				newDiv.appendChild(p);
+				if (text1.includes('data:image/png;base64') === false) {
+					p.appendChild(n);	
+					newDiv.appendChild(p);
+				} else {
+					p = document.createElement('img');
+					p.src = text1;
+					p.appendChild(n);	
+					newDiv.appendChild(p);
+				}
 
 				container.appendChild(newDiv);
 				document.getElementById(div).appendChild(container);
@@ -112,6 +135,7 @@
 			var go = false;
 			var q = sessionStorage.getItem('q');
 			var qe = sessionStorage.getItem('qe');
+			var image = document.getElementById('image');
 
 			if (q === null || qe === null) {
 				window.location = 'index.html';
@@ -132,22 +156,29 @@
 				addData(past.value);
 			})
 
+			image.addEventListener('click', function() {
+				video.loadPixels();
+				addData(video.canvas.toDataURL());
+		  })
+
 			async function addData(datameow) {
 				var d = new Date();
+				var content = {
+					id: q,
+					log: datameow,
+					author: q,
+					email: qe,
+					name: groupName.value,
+					password: groupPassword.value,
+					date: d.getMonth()+1 + '/' + d.getDate() + '/' + d.getFullYear()
+				};
+				
 				var options = {
 					method: 'POST',
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify({
-						id: q,
-						log: datameow,
-						author: q,
-						email: qe,
-						name: groupName.value,
-						password: groupPassword.value,
-						date: d.getMonth()+1 + '/' + d.getDate() + '/' + d.getFullYear()
-					})
+					body: JSON.stringify(content)
 				};
 				var response = await fetch('/addGroupData', options);
 				var data = await response.json();
