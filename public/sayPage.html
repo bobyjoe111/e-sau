@@ -76,17 +76,10 @@
 		
 		<script>
 			var video;
-			navigator.mediaDevices.getUserMedia({video: true})
-  				.then((stream) => {
-    		/* use the stream */
-  				})
-  				.catch((err) => {
-    				/* handle the error */
-  		});
 			function setup() {
 				noCanvas();
 				video = createCapture(VIDEO);
-				video.size(320/3, 240/3);
+				video.size(320/4, 240/4);
 			}
 			function newH(text, text1, div, left) {
 				const container = document.createElement("div");
@@ -217,7 +210,8 @@
 					return;
 				}
 				document.getElementById('logs').innerHTML = '';
-				for (var i = 0; i < data.logs.length; i++) {	
+				var start = data.logs.length - 20 > 0 ? data.logs.length - 20: 0;
+				for (var i = start; i < data.logs.length; i++) {	
 					document.getElementById('logs').innerHTML += '<div id="thick">';
 					newH("At " + data.logs[i].date + " " + data.logs[i].author + " posted: ", data.logs[i].log, 'logs', !(data.logs[i].author === q));
 
@@ -233,7 +227,7 @@
 				if (go === true) {
 					getData(q, false);
 				}
-			}, 500);
+			}, 3000);
 			
 		</script>
 	</body>
