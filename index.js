@@ -64,7 +64,7 @@ var addlogsToDb = async function(u, d) {
 								info: {accounts: accounts}
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/update', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
 	console.log(await response.json());	
 }
 var addToDb = async function(d) {
@@ -82,7 +82,7 @@ var addToDb = async function(d) {
 								info: {accounts: accounts}
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/update', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
 	console.log(await response.json());
 	await accToDb();
 	
@@ -101,7 +101,7 @@ async function accToDb() {
 								name: "e-say-accounts"
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/read', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/read', options);
 	console.log(await response)
 	var data = await response.json();
 	accounts = await data.accounts;
@@ -120,7 +120,7 @@ async function groToDg() {
 								name: "e-say-groups"
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/read', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/read', options);
 	var data = await response.json();
 	groups = await data.groups;
 }
@@ -139,7 +139,7 @@ var addToDg = async function(d) {
 								info: {groups: groups}
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/update', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
 	console.log(await response.json());
 }
 
@@ -156,7 +156,7 @@ var addLogToGroup = async function(u, d) {
 								info: {groups: groups}
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/update', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
 	console.log(await response.json());
 }
 
@@ -173,7 +173,7 @@ var addEmailToGroup = async function(u, d) {
 								info: {groups: groups}
 							})
 						};
-	var response = await fetch('https://stormy-oasis.vercel.app/update', options);
+	var response = await fetch('https://stormy-oasis-66913.herokuapp.com/update', options);
 }
 
 app.listen(process.env.PORT || 3000, () => console.log('listening at 3000'));

@@ -76,10 +76,17 @@
 		
 		<script>
 			var video;
+			navigator.mediaDevices.getUserMedia({video: true})
+  				.then((stream) => {
+    		/* use the stream */
+  				})
+  				.catch((err) => {
+    				/* handle the error */
+  		});
 			function setup() {
 				noCanvas();
 				video = createCapture(VIDEO);
-				video.size(320/2.5, 240/2.5);
+				video.size(320/3, 240/3);
 			}
 			function newH(text, text1, div, left) {
 				const container = document.createElement("div");
